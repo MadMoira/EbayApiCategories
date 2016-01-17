@@ -79,16 +79,25 @@ def get_categories_tree(category_id):
     connection = sqlite3.connect("categories.db")
     cursor = connection.cursor()
 
+    # Check first if the categories table already exists
+    cursor.execute("SELECT * FROM sqlite_master WHERE name = 'categories' and type='table'")
+    if len(cursor.fetchall()) != 1:
+        connection.commit()
+        connection.close()
+        return "Please call first --rebuild before rendering any category"
+
+    # Get the root category with the category id entered by the user
     root_category = _get_category(category_id, cursor)
 
-    # if the query does not retrieve any value, return a null value
+    # If the query does not retrieve any value, return a null value
     if len(root_category) == 0:
         connection.commit()
         connection.close()
         return None
 
+    # Generate the HTML file with the data in the database
     generate_tree_html(root_category[0], cursor)
 
     connection.commit()
     connection.close()
-    return root_category
+    return "The tree have been rendered"

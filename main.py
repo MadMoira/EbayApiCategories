@@ -40,7 +40,7 @@ elif sys.argv[1] == "--render":
         if not categories:
             print("No category with ID: {}".format(sys.argv[2]))
         else:
-            print("The tree has been rendered")
+            print(categories)
 
 else:
     print("Please, enter a valid command")

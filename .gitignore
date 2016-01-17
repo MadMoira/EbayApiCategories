@@ -1,0 +1,8 @@
+.idea/
+temporal/
+challenge/
+__pycache__/
+
+*.html
+categories.db
+settings.py

@@ -1,17 +1,23 @@
 import sqlite3
+from utils import generate_tree_html
 
 
 def create_database_schema():
+    """
+    Generate the database and the categories table, if the database
+    already exists, delete all the rows in the table
+    """
+
     connection = sqlite3.connect("categories.db")
     cursor = connection.cursor()
 
-    # Check first if the database already exists
+    # Check first if the categories table already exists
     cursor.execute("SELECT * FROM sqlite_master WHERE name = 'categories' and type='table'")
 
     if len(cursor.fetchall()) != 1:
         # Create categories table if not exists
         cursor.execute('CREATE TABLE categories ('
-                       'CategoryID NUMBER, '
+                       'CategoryID NUMBER PRIMARY KEY, '
                        'Name TEXT, '
                        'Parent NUMBER, '
                        'BestOffer BOOLEAN, '
@@ -26,16 +32,15 @@ def create_database_schema():
 
 
 def create_categories_rows(categories):
+    """
+    Format the data recovered from the Ebay api, before inserting it into the database
+    """
     connection = sqlite3.connect("categories.db")
     cursor = connection.cursor()
 
     categories_data = []
     for category in categories:
-
-        if hasattr(category, 'BestOfferEnabled'):
-            best_offer_enabled = category['BestOfferEnabled'] == 'true'
-        else:
-            best_offer_enabled = False
+        best_offer_enabled = category.get('BestOfferEnabled', False)
         formatted = (
             int(category['CategoryID']),
             category['CategoryName'],
@@ -53,6 +58,12 @@ def create_categories_rows(categories):
 
 
 def _get_category(category_id, cursor):
+    """
+    Return a category
+
+    :param category_id:
+    :param cursor:
+    """
     cursor.execute('SELECT CategoryID, Name, BestOffer, Level, Parent '
                    'FROM categories '
                    'WHERE CategoryID=?',
@@ -60,63 +71,23 @@ def _get_category(category_id, cursor):
     return cursor.fetchall()
 
 
-def _get_tree_html(category, cursor):
-    cursor.execute('SELECT CategoryID, Name, BestOffer, Level, Parent '
-                   'FROM categories '
-                   'WHERE Parent=? and Parent != CategoryID',
-                   (category[0],))
-    categories = cursor.fetchall()
-
-    category_children_html = ""
-
-    for sub_category in categories:
-        children_html = _get_tree_html(sub_category, cursor)
-        if children_html:
-            category_children_html += children_html
-
-    category_html = """
-        <table>
-            <tr>
-                <td>
-                    {}
-                </td>
-                <td>
-                    {}
-                </td>
-            <tr>
-        </table>
-    """.format(category[1], category_children_html)
-
-    return category_html
-
-
 def get_categories_tree(category_id):
+    """
+    Retrieve the root category, if it does not exist, close the connection to the
+    database and return a null value
+    """
     connection = sqlite3.connect("categories.db")
     cursor = connection.cursor()
 
     root_category = _get_category(category_id, cursor)
 
+    # if the query does not retrieve any value, return a null value
     if len(root_category) == 0:
         connection.commit()
         connection.close()
         return None
 
-    category_html = _get_tree_html(root_category[0], cursor)
-
-    open_html = """
-    <html>
-        <head>
-            <title>{}</title>
-        </head>
-        <body>
-            {}
-        </body>
-    </html>  """.format(str(category_id), category_html)
-
-    html_name = '{}.html'.format(str(category_id))
-    html_file = open(html_name, 'w')
-    html_file.write(open_html)
-    html_file.close()
+    generate_tree_html(root_category[0], cursor)
 
     connection.commit()
     connection.close()

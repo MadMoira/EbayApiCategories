@@ -35,6 +35,7 @@ elif sys.argv[1] == "--render":
         print("Invalid ID. Please enter  a number")
     else:
         # This function return the root category of the tree and render the tree in a html file
+        # If there is not a root category, show a error message
         categories = get_categories_tree(int(sys.argv[2]))
         if not categories:
             print("No category with ID: {}".format(sys.argv[2]))

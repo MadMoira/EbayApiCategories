@@ -8,36 +8,62 @@ def _get_tree_html(category, cursor):
                    (category[0],))
     categories = cursor.fetchall()
 
-    category_children_html = ""
+    category_children_html = ''
 
     for sub_category in categories:
         children_html = _get_tree_html(sub_category, cursor)
         if children_html:
             category_children_html += children_html
 
-    category_html = """
-        <table>
-            <tr>
-                <td>
-                    Category ID: {}
-                    Category Name: {}
-                    Category Level: {}
-                    Best offer enabled: {}
-                    Parent category ID: {}
-                </td>
-                <td>
-                    {}
-                </td>
-            <tr>
-        </table>
-    """.format(
-            category[0],
-            category[1],
-            category[3],
-            category[2],
-            category[4],
-            category_children_html
-    )
+    # If category children HTML if not empty, add a nested table
+    if category_children_html != '':
+        category_html = """
+            <table>
+                <tr>
+                    <td>
+                        <p class="information">
+                            <strong>Category ID:</strong> {} <br>
+                            <strong>Category Name:</strong> {} <br>
+                            <strong>Category Level:</strong> {} <br>
+                            <strong>Best offer enabled:</strong> {} <br>
+                            <strong>Parent category ID:</strong> {} <br>
+                        </p>
+                    </td>
+                    <td>
+                        {}
+                    </td>
+                <tr>
+            </table>
+        """.format(
+                category[0],
+                category[1],
+                category[3],
+                category[2],
+                category[4],
+                category_children_html
+        )
+    else:
+        category_html = """
+            <table>
+                <tr>
+                    <td>
+                        <p class="information">
+                            <strong>Category ID:</strong> {} <br>
+                            <strong>Category Name:</strong> {} <br>
+                            <strong>Category Level:</strong> {} <br>
+                            <strong>Best offer enabled:</strong> {} <br>
+                            <strong>Parent category ID:</strong> {} <br>
+                        </p>
+                    </td>
+                <tr>
+            </table>
+        """.format(
+                category[0],
+                category[1],
+                category[3],
+                category[2],
+                category[4],
+        )
 
     return category_html
 
@@ -53,6 +79,7 @@ def generate_tree_html(root_category, cursor):
     <html>
         <head>
             <title>{}</title>
+            <link rel="stylesheet" href="categories.css">
         </head>
         <body>
             {}

@@ -20,3 +20,8 @@ Add a settings.py file in the main directory, the settings file must have the ne
 '</RequesterCredentials> ' \
 '</GetCategoriesRequest>'
 ```
+
+## Use instructions in Ubuntu
+
+* Run first the command python3 main.py --rebuild
+* Run the command python3 main.py --render category_id   where category id is the CategoryID in the

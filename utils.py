@@ -1,4 +1,4 @@
-def _get_tree_html(category, cursor):
+def _get_tree_html(category, cursor, render_as_table):
     """
     Create the HTML string of the categories, with all the subcategories
     """
@@ -13,73 +13,99 @@ def _get_tree_html(category, cursor):
     category_children_html = ''
 
     for sub_category in categories:
-        children_html = _get_tree_html(sub_category, cursor)
+        children_html = _get_tree_html(sub_category, cursor, render_as_table)
         if children_html:
             category_children_html += children_html
 
     # If category children HTML if not empty, add a nested table
     if category_children_html != '':
-        category_html = """
-            <table>
-                <tr>
-                    <td>
-                        <p class="information">
-                            <strong>Category ID:</strong> {} <br>
-                            <strong>Category Name:</strong> {} <br>
-                            <strong>Category Level:</strong> {} <br>
-                            <strong>Best offer enabled:</strong> {} <br>
-                            <strong>Parent category ID:</strong> {} <br>
-                            <strong>Leaf: {}</strong>
-                        </p>
-                    </td>
-                    <td>
-                        {}
-                    </td>
-                <tr>
-            </table>
-        """.format(
-                category['CategoryID'],
-                category['Name'],
-                category['Level'],
-                category['BestOffer'],
-                category['Parent'],
-                category['Leaf'],
-                category_children_html
-        )
+        if render_as_table:
+            category_html = """
+                <table>
+                    <tr>
+                        <td>
+                            <p class="information">
+                                <strong>Category ID:</strong> {} <br>
+                                <strong>Category Name:</strong> {} <br>
+                                <strong>Category Level:</strong> {} <br>
+                                <strong>Best offer enabled:</strong> {} <br>
+                                <strong>Parent category ID:</strong> {} <br>
+                                <strong>Leaf: {}</strong>
+                            </p>
+                        </td>
+                        <td>
+                            {}
+                        </td>
+                    <tr>
+                </table>
+            """.format(
+                    category['CategoryID'],
+                    category['Name'],
+                    category['Level'],
+                    category['BestOffer'],
+                    category['Parent'],
+                    category['Leaf'],
+                    category_children_html
+            )
+        else:
+            category_html = """
+                <ul>
+                    <li><div style="">{} - {}<br>Level: {}<br>Best offer:  {}<div>{}</li>
+                </ul>
+            """.format(
+                    category['CategoryID'],
+                    category['Name'],
+                    category['Level'],
+                    category['BestOffer'],
+                    category_children_html
+            )
+
     else:
-        category_html = """
-            <table>
-                <tr>
-                    <td>
-                        <p class="information">
-                            <strong>Category ID:</strong> {} <br>
-                            <strong>Category Name:</strong> {} <br>
-                            <strong>Category Level:</strong> {} <br>
-                            <strong>Best offer enabled:</strong> {} <br>
-                            <strong>Parent category ID:</strong> {} <br>
-                            <strong>Leaf: {}</strong>
-                        </p>
-                    </td>
-                <tr>
-            </table>
-        """.format(
-                category['CategoryID'],
-                category['Name'],
-                category['Level'],
-                category['BestOffer'],
-                category['Parent'],
-                category['Leaf'],
-        )
+        if render_as_table:
+            category_html = """
+                <table>
+                    <tr>
+                        <td>
+                            <p class="information">
+                                <strong>Category ID:</strong> {} <br>
+                                <strong>Category Name:</strong> {} <br>
+                                <strong>Category Level:</strong> {} <br>
+                                <strong>Best offer enabled:</strong> {} <br>
+                                <strong>Parent category ID:</strong> {} <br>
+                                <strong>Leaf: {}</strong>
+                            </p>
+                        </td>
+                    <tr>
+                </table>
+            """.format(
+                    category['CategoryID'],
+                    category['Name'],
+                    category['Level'],
+                    category['BestOffer'],
+                    category['Parent'],
+                    category['Leaf'],
+            )
+        else:
+            category_html = """
+                <ul>
+                    <li><div style="">{} - {}<br>Level: {}<br>Best offer: {}<div></li>
+                </ul>
+            """.format(
+                    category['CategoryID'],
+                    category['Name'],
+                    category['Level'],
+                    category['BestOffer'],
+            )
 
     return category_html
 
 
-def generate_tree_html(root_category, cursor):
+def generate_tree_html(root_category, cursor, render_as_table):
     """
     Create or replace the HTML file with the root category id
     as the file name
     """
-    category_html = _get_tree_html(root_category, cursor)
+    category_html = _get_tree_html(root_category, cursor, render_as_table)
 
     open_html = """
     <html>

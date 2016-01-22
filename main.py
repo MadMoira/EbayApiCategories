@@ -36,9 +36,14 @@ elif sys.argv[1] == "--render":
     elif not is_valid_id(sys.argv[2]):
         print("Invalid ID. Please enter  a number")
     else:
+        # Check if the tree must be rendered as a list or as a table
+        as_table = False
+        if len(sys.argv) == 4:
+            as_table = sys.argv[3] == '--as-table'
+
         # This function return the root category of the tree and render the tree in a html file
         # If there is not a root category, show a error message
-        categories = get_categories_tree(int(sys.argv[2]))
+        categories = get_categories_tree(int(sys.argv[2]), as_table)
         if not categories:
             print("No category with ID: {}".format(sys.argv[2]))
         else:

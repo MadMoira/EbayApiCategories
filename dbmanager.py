@@ -74,7 +74,7 @@ def _get_category(category_id, cursor):
     return cursor.fetchall()
 
 
-def get_categories_tree(category_id):
+def get_categories_tree(category_id, render_as_table):
     """
     Retrieve the root category, if it does not exist, close the connection to the
     database and return a null value
@@ -100,7 +100,7 @@ def get_categories_tree(category_id):
         return None
 
     # Generate the HTML file with the data in the database
-    generate_tree_html(root_category[0], cursor)
+    generate_tree_html(root_category[0], cursor, render_as_table)
 
     connection.commit()
     connection.close()

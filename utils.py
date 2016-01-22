@@ -3,6 +3,7 @@ def _get_tree_html(category, cursor, render_as_table):
     Create the HTML string of the categories, with all the subcategories
     """
     categories = []
+    # If the tree node is a leaf, don't look up in the database for the children
     if category['Leaf'] == 'false':
         cursor.execute('SELECT CategoryID, Name, BestOffer, Level, Parent, Leaf '
                        'FROM categories '
@@ -50,7 +51,7 @@ def _get_tree_html(category, cursor, render_as_table):
         else:
             category_html = """
                 <ul>
-                    <li><div style="">{} - {}<br>Level: {}<br>Best offer:  {}<div>{}</li>
+                    <li><div>{} - {}<br>Level: {}<br>Best offer:  {}<div>{}</li>
                 </ul>
             """.format(
                     category['CategoryID'],
@@ -88,7 +89,7 @@ def _get_tree_html(category, cursor, render_as_table):
         else:
             category_html = """
                 <ul>
-                    <li><div style="">{} - {}<br>Level: {}<br>Best offer: {}<div></li>
+                    <li><div>{} - {}<br>Level: {}<br>Best offer: {}<div></li>
                 </ul>
             """.format(
                     category['CategoryID'],

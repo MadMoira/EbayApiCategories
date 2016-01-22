@@ -21,7 +21,8 @@ def create_database_schema():
                        'Name TEXT, '
                        'Parent NUMBER, '
                        'BestOffer BOOLEAN, '
-                       'Level NUMBER)'
+                       'Level NUMBER, '
+                       'Leaf TEXT)'
                        )
     else:
         # Delete data if table already exist
@@ -41,17 +42,19 @@ def create_categories_rows(categories):
     categories_data = []
     for category in categories:
         best_offer_enabled = category.get('BestOfferEnabled', False)
+        is_leaf_category = category.get('LeafCategory', 'false')
         formatted = (
             int(category['CategoryID']),
             category['CategoryName'],
             int(category['CategoryParentID']),
             best_offer_enabled,
             int(category['CategoryLevel']),
+            is_leaf_category
         )
         categories_data.append(formatted)
 
-    cursor.executemany('INSERT INTO categories(CategoryID, Name, Parent, BestOffer, Level) '
-                       'VALUES (?, ?, ?, ?, ?)', categories_data)
+    cursor.executemany('INSERT INTO categories(CategoryID, Name, Parent, BestOffer, Level, Leaf) '
+                       'VALUES (?, ?, ?, ?, ?, ?)', categories_data)
 
     connection.commit()
     connection.close()
@@ -64,7 +67,7 @@ def _get_category(category_id, cursor):
     :param category_id:
     :param cursor:
     """
-    cursor.execute('SELECT CategoryID, Name, BestOffer, Level, Parent '
+    cursor.execute('SELECT CategoryID, Name, BestOffer, Level, Parent, Leaf '
                    'FROM categories '
                    'WHERE CategoryID=?',
                    (category_id,))
@@ -77,6 +80,7 @@ def get_categories_tree(category_id):
     database and return a null value
     """
     connection = sqlite3.connect("categories.db")
+    connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
     # Check first if the categories table already exists

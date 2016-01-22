@@ -9,6 +9,7 @@ import requests
 import xmltodict
 import json
 import sys
+import time
 
 
 if sys.argv[1] == "--rebuild":
@@ -27,6 +28,7 @@ if sys.argv[1] == "--rebuild":
         print(json.dumps(data['Errors'], indent=4))
 
 elif sys.argv[1] == "--render":
+    start_time = time.time()
     # Check if there are at least three parameters, router + render + category ID
     if len(sys.argv) < 3:
         print("Error. Please enter a category id")
@@ -41,6 +43,7 @@ elif sys.argv[1] == "--render":
             print("No category with ID: {}".format(sys.argv[2]))
         else:
             print(categories)
+    print("Render time: {} seconds".format(str(time.time() - start_time)))
 
 else:
     print("Please, enter a valid command")

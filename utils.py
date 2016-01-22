@@ -2,11 +2,13 @@ def _get_tree_html(category, cursor):
     """
     Create the HTML string of the categories, with all the subcategories
     """
-    cursor.execute('SELECT CategoryID, Name, BestOffer, Level, Parent '
-                   'FROM categories '
-                   'WHERE Parent=? and Parent != CategoryID',
-                   (category[0],))
-    categories = cursor.fetchall()
+    categories = []
+    if category['Leaf'] == 'false':
+        cursor.execute('SELECT CategoryID, Name, BestOffer, Level, Parent, Leaf '
+                       'FROM categories '
+                       'WHERE Parent=? and Parent != CategoryID',
+                       (category[0],))
+        categories = cursor.fetchall()
 
     category_children_html = ''
 
@@ -27,6 +29,7 @@ def _get_tree_html(category, cursor):
                             <strong>Category Level:</strong> {} <br>
                             <strong>Best offer enabled:</strong> {} <br>
                             <strong>Parent category ID:</strong> {} <br>
+                            <strong>Leaf: {}</strong>
                         </p>
                     </td>
                     <td>
@@ -35,11 +38,12 @@ def _get_tree_html(category, cursor):
                 <tr>
             </table>
         """.format(
-                category[0],
-                category[1],
-                category[3],
-                category[2],
-                category[4],
+                category['CategoryID'],
+                category['Name'],
+                category['Level'],
+                category['BestOffer'],
+                category['Parent'],
+                category['Leaf'],
                 category_children_html
         )
     else:
@@ -53,16 +57,18 @@ def _get_tree_html(category, cursor):
                             <strong>Category Level:</strong> {} <br>
                             <strong>Best offer enabled:</strong> {} <br>
                             <strong>Parent category ID:</strong> {} <br>
+                            <strong>Leaf: {}</strong>
                         </p>
                     </td>
                 <tr>
             </table>
         """.format(
-                category[0],
-                category[1],
-                category[3],
-                category[2],
-                category[4],
+                category['CategoryID'],
+                category['Name'],
+                category['Level'],
+                category['BestOffer'],
+                category['Parent'],
+                category['Leaf'],
         )
 
     return category_html

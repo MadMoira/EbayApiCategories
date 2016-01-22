@@ -51,7 +51,7 @@ def _get_tree_html(category, cursor, render_as_table):
         else:
             category_html = """
                 <ul>
-                    <li><div>{} - {}<br>Level: {}<br>Best offer:  {}<div>{}</li>
+                    <li><div>{} - {}<br>Level: {}<br>Best offer:  {}</div>{}</li>
                 </ul>
             """.format(
                     category['CategoryID'],
@@ -89,7 +89,7 @@ def _get_tree_html(category, cursor, render_as_table):
         else:
             category_html = """
                 <ul>
-                    <li><div>{} - {}<br>Level: {}<br>Best offer: {}<div></li>
+                    <li><div>{} - {}<br>Level: {}<br>Best offer: {}</div></li>
                 </ul>
             """.format(
                     category['CategoryID'],

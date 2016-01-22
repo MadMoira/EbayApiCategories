@@ -25,3 +25,8 @@ Add a settings.py file in the main directory, the settings file must have the ne
 
 * Run first the command python3 main.py --rebuild
 * Run the command python3 main.py --render category_id  where category id is the CategoryID in the Ebay Category Database
+
+## Render options
+
+* If you want to render the tree as a list, enter the command python3 main.py --render category_id
+* You can render the tree as a table adding the --as-table option, for example: python3 main.py --render 316 --as-table
